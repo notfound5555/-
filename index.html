@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101827">
-<title>果報は寝て待て会場 早見ポータル🚕</title>
+<title>HANEDA TAXI LIVE</title>
 <style>
 :root{--bg:#0b1220;--panel:#141f31;--line:#29384f;--text:#f4f7fb;--muted:#aebbd0;--accent:#65d7b0}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#111d30 0,#0b1220 300px);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -11,8 +11,20 @@ section{margin:0 0 28px}.section-title{font-size:22px;margin:0 0 5px}.section-su
 .fare-panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px}.fare-tools{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.fare-tools label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:12px}.fare-tools input,.fare-tools select{width:100%;min-width:0}.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px}thead{background:#1b2b41;position:sticky;top:0}th,td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}thead th{font-size:12px;color:#d9e6f6}thead th:first-child,tbody th{text-align:left}tbody th{font-weight:650}tbody tr:nth-child(even){background:#111b2b}tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}.fare-note{font-size:12px;line-height:1.7;color:var(--muted);margin:12px 0 0}.count{font-size:12px;color:var(--muted);margin:8px 0}
 .notice{margin-top:16px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12px;line-height:1.7}footer{padding-top:0;padding-bottom:28px;font-size:11px;color:#7f90a8}
 @media(max-width:560px){header{padding-top:20px}.fare-tools{grid-template-columns:1fr}.frame{aspect-ratio:1/1}.fare-panel{padding:10px}}
+
+.event-panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px}
+.event-intro{font-size:13px;color:var(--muted);line-height:1.7;margin:0 0 14px}
+.event-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px}
+.event-link{display:block;background:#1b2b41;border:1px solid var(--line);border-radius:12px;padding:13px;color:var(--text);text-decoration:none}
+.event-link strong{display:block;font-size:15px;margin-bottom:5px}
+.event-link span{display:block;color:var(--muted);font-size:12px;line-height:1.6}
+.event-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin:14px 0 8px}
+.event-tools label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:12px}
+.event-tools select{width:100%;min-width:0}
+.event-status{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+@media(max-width:560px){.event-tools{grid-template-columns:1fr}}
 </style></head><body>
-<header><h1>果報は寝て待て会場 早見ポータル🚕</h1><p class="sub">羽田空港 タクシー乗り場・待機所カメラ ＋ 定額運賃早見表</p></header>
+<header><h1>HANEDA TAXI LIVE</h1><p class="sub">羽田空港 タクシー乗り場・待機所カメラ ＋ 定額運賃早見表</p></header>
 <main>
 <section id="cameras"><h2 class="section-title">📹 ライブカメラ</h2><p class="section-sub">見たい種類のカメラに絞り込めます。</p>
 <div class="controls"><button class="active" data-filter="all">すべて表示</button><button data-filter="stand">乗り場</button><button data-filter="pool">待機所</button><button id="refresh">再読み込み</button></div>
@@ -48,6 +60,38 @@ section{margin:0 0 28px}.section-title{font-size:22px;margin:0 0 5px}.section-su
 <tr data-area="武蔵野市" data-normal="14000" data-night="16500" data-discount="12600" data-nightdiscount="14800"><th scope="row">武蔵野市</th><td>14,000円</td><td>16,500円</td><td>12,600円</td><td>14,800円</td></tr></tbody></table></div>
 <p class="fare-note">※ 東京無線協同組合の公式掲載内容をもとにした早見表です。定額運賃の設定がない区市は掲載していません。<br>※ 深夜早朝割増は、運送の開始から終了までが22:00〜翌5:00の時間帯にすべて含まれる場合に適用されます。高速・有料道路料金、駐車料金などは別途です。<br>※ 運賃改定時にはこの表も更新が必要です。利用前に必ず<a style="padding:0;background:none;color:#65d7b0;text-decoration:underline" target="_blank" rel="noopener noreferrer" href="https://www.tokyomusen.or.jp/flat/haneda">東京無線の公式運賃表</a>をご確認ください。</p>
 </div></section>
+
+<section id="events">
+<h2 class="section-title">🎪 東京23区 イベント情報</h2>
+<p class="section-sub">今日・明日・週末の催しを確認。タクシー需要や混雑の目安探しに。</p>
+
+<div class="event-panel" id="autoEventsPanel">
+  <h3 style="margin:0 0 8px;font-size:16px">🆕 イベント情報（自動更新データ）</h3>
+  <div id="autoEventsList" class="event-links"><p class="event-status">イベント情報を読み込み中…</p></div>
+  <p class="event-status" id="autoEventsStatus">更新情報を確認しています。</p>
+</div>
+
+<div class="event-panel">
+<p class="event-intro">イベント情報は公式・観光情報サイトの最新掲載ページを開いて確認できます。開催日・時間・会場は変更される場合があるため、出発前に主催者の案内も確認してください。</p>
+<div class="event-links">
+<a class="event-link" target="_blank" rel="noopener noreferrer" href="https://www.my.metro.tokyo.lg.jp/event/?period=today"><strong>📍 今日のイベント</strong><span>東京都公式「My TOKYO」の当日イベント情報</span></a>
+<a class="event-link" target="_blank" rel="noopener noreferrer" href="https://www.my.metro.tokyo.lg.jp/event/?period=1-week"><strong>🗓️ 直近1週間</strong><span>近日開催のイベントをまとめて確認</span></a>
+<a class="event-link" target="_blank" rel="noopener noreferrer" href="https://www.gotokyo.org/jp/calendar/index.html"><strong>🌆 東京イベントカレンダー</strong><span>祭り・文化・スポーツ・マーケットなど</span></a>
+<a class="event-link" target="_blank" rel="noopener noreferrer" href="https://www.gotokyo.org/jp/calendar/index.html"><strong>🎟️ 観光・大型イベント</strong><span>東京観光公式サイトのイベント一覧</span></a>
+</div>
+<div class="event-tools">
+<label>区を選んでイベントを検索
+<select id="eventWard">
+<option value="">東京23区すべて</option>
+<option>千代田区</option><option>中央区</option><option>港区</option><option>新宿区</option><option>文京区</option><option>台東区</option><option>墨田区</option><option>江東区</option><option>品川区</option><option>目黒区</option><option>大田区</option><option>世田谷区</option><option>渋谷区</option><option>中野区</option><option>杉並区</option><option>豊島区</option><option>北区</option><option>荒川区</option><option>板橋区</option><option>練馬区</option><option>足立区</option><option>葛飾区</option><option>江戸川区</option>
+</select></label>
+<button id="eventSearch" type="button">選んだ区のイベントを検索 ↗</button>
+</div>
+<p class="event-status" id="eventUpdated">表示日を確認中…</p>
+<p class="event-status">※ この欄はイベント掲載元の最新ページへ直接アクセスします。サイト側でイベント情報を保存・再配信する仕組みではありません。ページ内のリンク先は掲載元の更新に合わせて最新情報を確認できます。</p>
+</div>
+</section>
+
 <div class="notice"><b>ご利用上の注意</b><br>・カメラは公式ページを表示／案内するための非公式まとめページです。埋め込み制限により表示できない場合は「公式カメラを開く」を押してください。<br>・運転中は操作せず、安全な場所に停車してからご利用ください。</div>
 </main><footer>Unofficial convenience page · Fare information source: 東京無線協同組合</footer>
 <script>
@@ -60,4 +104,47 @@ const filtered=original.filter(r=>r.dataset.area.toLowerCase().includes(q));
 filtered.sort((a,b)=>key==='area'?a.dataset.area.localeCompare(b.dataset.area,'ja'):Number(a.dataset[key])-Number(b.dataset[key]));
 tbody.replaceChildren(...filtered);document.getElementById('count').textContent=`${filtered.length}地区を表示`;}
 document.getElementById('search').addEventListener('input',updateFares);document.getElementById('sortBy').addEventListener('change',updateFares);updateFares();
+
+document.getElementById('eventSearch').addEventListener('click',()=>{
+  const ward=document.getElementById('eventWard').value;
+  const q=(ward ? ward+' ' : '東京23区 ')+'イベント 今日 週末';
+  window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank','noopener');
+});
+function updateEventDate(){
+  const now=new Date();
+  const fmt=new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false});
+  document.getElementById('eventUpdated').textContent='このページでの確認時刻：'+fmt.format(now)+'（日本時間）';
+}
+updateEventDate();
+
+
+async function loadAutoEvents(){
+  const list=document.getElementById('autoEventsList');
+  const status=document.getElementById('autoEventsStatus');
+  if(!list || !status) return;
+  try{
+    const response=await fetch('./events.json?ts='+Date.now(),{cache:'no-store'});
+    if(!response.ok) throw new Error('events.json を取得できません');
+    const data=await response.json();
+    const items=Array.isArray(data.sources)?data.sources:[];
+    list.replaceChildren();
+    if(!items.length){
+      list.innerHTML='<p class="event-status">イベント情報のリンクは準備中です。下の公式カレンダーから確認してください。</p>';
+    }else{
+      items.forEach(item=>{
+        const a=document.createElement('a'); a.className='event-link'; a.href=item.url;
+        a.target='_blank'; a.rel='noopener noreferrer';
+        const strong=document.createElement('strong'); strong.textContent=item.title;
+        const span=document.createElement('span'); span.textContent=item.description||'公式掲載ページを開く';
+        a.append(strong,span); list.append(a);
+      });
+    }
+    status.textContent='データ更新日時：'+(data.updated_at_jst||'未記録')+'（日本時間）｜イベント詳細・開催可否はリンク先で確認してください。';
+  }catch(e){
+    list.innerHTML='<p class="event-status">自動更新データを読み込めません。公式カレンダーから確認してください。</p>';
+    status.textContent='データの読み込みに失敗しました。';
+  }
+}
+loadAutoEvents();
+
 </script></body></html>

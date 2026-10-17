@@ -1,0 +1,36 @@
+{
+  "updated_at_jst": "初期データ（GitHub Actions実行後に更新）",
+  "note": "このデータは公式イベント掲載ページへのリンク集です。イベント全件の自動抽出を保証するものではありません。",
+  "sources": [
+    {
+      "title": "東京都公式 My TOKYO｜イベント情報",
+      "url": "https://www.my.metro.tokyo.lg.jp/event/",
+      "description": "東京都の公式イベント情報。開催日や詳細はリンク先で確認。"
+    },
+    {
+      "title": "GO TOKYO｜東京イベントカレンダー",
+      "url": "https://www.gotokyo.org/jp/calendar/index.html",
+      "description": "東京観光公式サイトのイベントカレンダー。"
+    },
+    {
+      "title": "東京ビッグサイト｜イベント情報",
+      "url": "https://www.bigsight.jp/visitor/event/",
+      "description": "展示会・イベントの開催予定。"
+    },
+    {
+      "title": "東京ドームシティ｜イベント・公演",
+      "url": "https://www.tokyo-dome.co.jp/",
+      "description": "公演・イベント情報は公式サイトで確認。"
+    },
+    {
+      "title": "日本武道館｜公演スケジュール",
+      "url": "https://www.nipponbudokan.or.jp/",
+      "description": "公演情報は公式サイトで確認。"
+    },
+    {
+      "title": "有明アリーナ｜イベント情報",
+      "url": "https://ariake-arena.tokyo/",
+      "description": "イベント・公演情報は公式サイトで確認。"
+    }
+  ]
+}
