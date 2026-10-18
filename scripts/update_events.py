@@ -185,6 +185,9 @@ def main():
             parser = JsonLdParser()
             parser.feed(html)
 
+            print(f'{source["venue"]}: HTML length = {len(html)}')
+            print(f'{source["venue"]}: JSON-LD documents = {len(parser.documents)}')
+
             source["available_at_last_check"] = True
             source["events_found_today"] = 0
 
