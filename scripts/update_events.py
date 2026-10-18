@@ -193,6 +193,16 @@ def main():
                         f'東京ドーム: "{keyword}" '
                         f'count = {html.lower().count(keyword.lower())}'
                     )
+                    if source["venue"] == "東京ドーム":
+                         text_sample = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.I | re.S)
+                         text_sample = re.sub(r"<style\b[^>]*>.*?</style>", " ", text_sample, flags=re.I | re.S)
+                         text_sample = re.sub(r"<[^>]+>", " ", text_sample)
+                         text_sample = re.sub(r"\s+", " ", text_sample)
+
+                         for keyword in ["2026年10月", "10月18日", "10/18", "開催日"]:
+                             pos = text_sample.find(keyword)
+                             if pos >= 0:
+                                print(f"東京ドーム text around {keyword}: {text_sample[max(0, pos-100):pos+250]}")
             source["available_at_last_check"] = True
             source["events_found_today"] = 0
 
