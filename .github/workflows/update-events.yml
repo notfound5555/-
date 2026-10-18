@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Refresh official event links
+      - name: Fetch today's venue events
         run: python scripts/update_events.py
 
       - name: Commit changes if needed
