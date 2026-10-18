@@ -118,31 +118,126 @@ function updateEventDate(){
 updateEventDate();
 
 
-async function loadAutoEvents(){
-  const list=document.getElementById('autoEventsList');
-  const status=document.getElementById('autoEventsStatus');
-  if(!list || !status) return;
-  try{
-    const response=await fetch('./events.json?ts='+Date.now(),{cache:'no-store'});
-    if(!response.ok) throw new Error('events.json を取得できません');
-    const data=await response.json();
-    const items=Array.isArray(data.sources)?data.sources:[];
+async function loadAutoEvents() {
+  const list = document.getElementById("autoEventsList");
+  const status = document.getElementById("autoEventsStatus");
+
+  if (!list || !status) return;
+
+  status.textContent = "イベント情報を読み込み中…";
+
+  try {
+    const response = await fetch(
+      "./events.json?ts=" + Date.now(),
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error("イベントデータを取得できませんでした");
+    }
+
+    const data = await response.json();
+    const events = Array.isArray(data.events) ? data.events : [];
+    const sources = Array.isArray(data.sources) ? data.sources : [];
+
     list.replaceChildren();
-    if(!items.length){
-      list.innerHTML='<p class="event-status">イベント情報のリンクは準備中です。下の公式カレンダーから確認してください。</p>';
-    }else{
-      items.forEach(item=>{
-        const a=document.createElement('a'); a.className='event-link'; a.href=item.url;
-        a.target='_blank'; a.rel='noopener noreferrer';
-        const strong=document.createElement('strong'); strong.textContent=item.title;
-        const span=document.createElement('span'); span.textContent=item.description||'公式掲載ページを開く';
-        a.append(strong,span); list.append(a);
+
+    // 更新状況
+    status.textContent =
+      "データ更新：" +
+      (data.updated_at_jst || "日時不明") +
+      " ／ 本日のイベント：" +
+      events.length +
+      "件";
+
+    // イベント一覧の見出し
+    const eventHeading = document.createElement("h3");
+    eventHeading.textContent = "📅 本日のイベント";
+    list.appendChild(eventHeading);
+
+    if (events.length === 0) {
+      const message = document.createElement("p");
+      message.textContent =
+        "本日のイベント情報を自動抽出できませんでした。下の公式ページも確認してください。";
+      list.appendChild(message);
+    } else {
+      events.forEach((event) => {
+        const card = document.createElement("div");
+        card.className = "event-card";
+        card.style.cssText =
+          "padding:12px;margin:10px 0;border:1px solid var(--line);" +
+          "border-radius:10px;background:var(--panel);";
+
+        const venue = document.createElement("div");
+        venue.style.fontWeight = "bold";
+        venue.textContent = "📍 " + (event.venue || "会場不明");
+        card.appendChild(venue);
+
+        const time = document.createElement("div");
+        time.style.marginTop = "5px";
+        time.textContent =
+          "🕒 " +
+          (event.start_time || "時間未掲載") +
+          (event.end_time ? " ～ " + event.end_time : "");
+        card.appendChild(time);
+
+        const title = document.createElement("div");
+        title.style.marginTop = "5px";
+        title.style.fontSize = "1.05em";
+        title.style.fontWeight = "bold";
+        title.textContent = event.title || "イベント名不明";
+        card.appendChild(title);
+
+        if (event.source_url) {
+          const link = document.createElement("a");
+          link.href = event.source_url;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = "公式情報を確認 ↗";
+          link.style.display = "inline-block";
+          link.style.marginTop = "8px";
+          card.appendChild(link);
+        }
+
+        list.appendChild(card);
       });
     }
-    status.textContent='データ更新日時：'+(data.updated_at_jst||'未記録')+'（日本時間）｜イベント詳細・開催可否はリンク先で確認してください。';
-  }catch(e){
-    list.innerHTML='<p class="event-status">自動更新データを読み込めません。公式カレンダーから確認してください。</p>';
-    status.textContent='データの読み込みに失敗しました。';
+
+    // 各会場の公式ページ
+    const sourceHeading = document.createElement("h3");
+    sourceHeading.textContent = "🏟️ 各会場の公式イベント情報";
+    sourceHeading.style.marginTop = "24px";
+    list.appendChild(sourceHeading);
+
+    sources.forEach((source) => {
+      if (!source.url) return;
+
+      const item = document.createElement("div");
+      item.style.margin = "10px 0";
+
+      const link = document.createElement("a");
+      link.href = source.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = source.title || source.venue || "公式サイト";
+
+      item.appendChild(link);
+
+      if (source.description) {
+        const description = document.createElement("div");
+        description.style.fontSize = "0.9em";
+        description.style.opacity = "0.8";
+        description.textContent = source.description;
+        item.appendChild(description);
+      }
+
+      list.appendChild(item);
+    });
+
+  } catch (error) {
+    console.error("イベント情報の読み込みエラー:", error);
+    status.textContent =
+      "イベント情報を読み込めませんでした。時間をおいて再読み込みしてください。";
   }
 }
 loadAutoEvents();
