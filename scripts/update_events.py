@@ -187,7 +187,12 @@ def main():
 
             print(f'{source["venue"]}: HTML length = {len(html)}')
             print(f'{source["venue"]}: JSON-LD documents = {len(parser.documents)}')
-
+            if source["venue"] == "東京ドーム":
+                for keyword in ["2026", "10月", "イベント", "公演", "schedule"]:
+                    print(
+                        f'東京ドーム: "{keyword}" '
+                        f'count = {html.lower().count(keyword.lower())}'
+                    )
             source["available_at_last_check"] = True
             source["events_found_today"] = 0
 
