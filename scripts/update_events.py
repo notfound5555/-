@@ -17,7 +17,7 @@ SOURCES = [
     {
         "venue": "東京ドーム",
         "title": "東京ドーム｜イベントスケジュール",
-        "url": "https://www.tokyo-dome.co.jp/dome/event/",
+        "url": "https://www.tokyo-dome.co.jp/dome/event/schedule.html",
         "description": "東京ドームの公式イベント情報",
     },
     {
