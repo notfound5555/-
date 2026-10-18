@@ -1,42 +1,56 @@
 {
-  "updated_at_jst": "2026-10-18 00:32",
-  "note": "公式イベント掲載ページへのリンク集です。イベント全件・開催時間の自動抽出を保証するものではありません。",
+  "updated_at_jst": "2026-10-18 17:35",
+  "date": "2026-10-18",
+  "note": "公式ページから取得できた構造化イベント情報です。掲載形式によってはイベントが抽出されない場合があります。",
+  "events": [],
   "sources": [
     {
-      "title": "東京都公式 My TOKYO｜イベント情報",
-      "url": "https://www.my.metro.tokyo.lg.jp/event/",
-      "description": "東京都の公式イベント情報。開催日や詳細はリンク先で確認。",
-      "available_at_last_check": true
+      "venue": "東京ドーム",
+      "title": "東京ドーム｜イベントスケジュール",
+      "url": "https://www.tokyo-dome.co.jp/dome/event/",
+      "description": "東京ドームの公式イベント情報",
+      "available_at_last_check": true,
+      "events_found_today": 0
     },
     {
-      "title": "GO TOKYO｜東京イベントカレンダー",
-      "url": "https://www.gotokyo.org/jp/calendar/index.html",
-      "description": "東京観光公式サイトのイベントカレンダー。",
-      "available_at_last_check": true
-    },
-    {
+      "venue": "東京ビッグサイト",
       "title": "東京ビッグサイト｜イベント情報",
       "url": "https://www.bigsight.jp/visitor/event/",
-      "description": "展示会・イベントの開催予定。",
-      "available_at_last_check": true
+      "description": "展示会・イベントの公式開催情報",
+      "available_at_last_check": true,
+      "events_found_today": 0
     },
     {
-      "title": "東京ドームシティ｜公式サイト",
-      "url": "https://www.tokyo-dome.co.jp/",
-      "description": "公演・イベント情報は公式サイトで確認。",
-      "available_at_last_check": true
-    },
-    {
+      "venue": "日本武道館",
       "title": "日本武道館｜公式サイト",
       "url": "https://www.nipponbudokan.or.jp/",
-      "description": "公演情報は公式サイトで確認。",
-      "available_at_last_check": true
+      "description": "日本武道館の公式情報",
+      "available_at_last_check": true,
+      "events_found_today": 0
     },
     {
+      "venue": "有明アリーナ",
       "title": "有明アリーナ｜公式サイト",
       "url": "https://ariake-arena.tokyo/",
-      "description": "イベント・公演情報は公式サイトで確認。",
-      "available_at_last_check": true
+      "description": "有明アリーナの公式情報",
+      "available_at_last_check": true,
+      "events_found_today": 0
+    },
+    {
+      "venue": "東京ガーデンシアター",
+      "title": "東京ガーデンシアター｜イベント情報",
+      "url": "https://www.shopping-sumitomo-rd.com/tokyo_garden_theater/",
+      "description": "東京ガーデンシアターの公式情報",
+      "available_at_last_check": true,
+      "events_found_today": 0
+    },
+    {
+      "venue": "TOYOTA ARENA TOKYO",
+      "title": "TOYOTA ARENA TOKYO｜公式サイト",
+      "url": "https://www.toyota-arena-tokyo.jp/",
+      "description": "TOYOTA ARENA TOKYOの公式情報",
+      "available_at_last_check": true,
+      "events_found_today": 0
     }
   ]
 }
