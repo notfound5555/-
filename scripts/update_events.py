@@ -177,7 +177,26 @@ def main():
     today = datetime.now(JST).date()
     events = []
     sources = []
+    dome_source = next(s for s in SOURCES if s["venue"] == "東京ドーム")
+    try:
+        html = fetch_page(dome_source["url"])
+        text_sample = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.I | re.S)
+        text_sample = re.sub(r"<style\b[^>]*>.*?</style>", " ", text_sample, flags=re.I | re.S)
+        text_sample = re.sub(r"<[^>]+>", " ", text_sample)
+        text_sample = re.sub(r"\s+", " ", text_sample)
 
+        month_label = f"{today.year}年{today.month}月"
+        month_pos = text_sample.find(month_label)
+
+        if month_pos >= 0:
+            month_text = text_sample[month_pos:]
+            month_text = month_text[:12000]
+            print(f"東京ドーム: 今日の月の情報を確認中 ({month_label})")
+            print(month_text[:1500])
+        else:
+            print(f"東京ドーム: {month_label} が見つかりません")
+    except Exception as exc:
+        print(f"東京ドーム追加確認エラー: {exc}")
     for original in SOURCES:
         source = dict(original)
         try:
