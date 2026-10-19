@@ -315,112 +315,143 @@ async function loadAutoEvents() {
 }
 loadAutoEvents();
 /* 空車探索マップ：地点指定のみ。リアルタイム空車データは未接続。 */
-(function initTaxiExplorer(){
-const mapElement = document.getElementById(‘taxiMap’);
-const status = document.getElementById(‘taxiMapStatus’);
-if (!mapElement) return;
-if (!window.L) {
-if (status) status.textContent = ‘地図を読み込めませんでした。通信環境を確認してください。’;
-return;
-}
+(function initTaxiExplorer() {
+  const mapElement = document.getElementById('taxiMap');
+  const status = document.getElementById('taxiMapStatus');
 
-const defaultCenter = [35.6812, 139.7690];
-const map = L.map('taxiMap').setView(defaultCenter, 13);
+  if (!mapElement) return;
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-maxZoom: 19,
-attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
-const marker = L.marker(defaultCenter, {draggable:true}).addTo(map);
-const circle = L.circle(defaultCenter, {
-radius: 500,
-color:’#65d7b0’,
-weight:2,
-fillColor:’#65d7b0’,
-fillOpacity:0.12
-}).addTo(map);
-
-let selectedLabel = ‘東京駅’;
-
-function updatePoint(latlng, label){
-marker.setLatLng(latlng);
-circle.setLatLng(latlng);
-
-const radius = Number(document.getElementById('taxiRadius').value);
-circle.setRadius(radius);
-if (label) selectedLabel = label;
-document.getElementById('taxiSelectedPlace').textContent = selectedLabel;
-document.getElementById('taxiSelectedCoords').textContent =
-  latlng.lat.toFixed(5) + ', ' + latlng.lng.toFixed(5);
-status.textContent = '調査範囲：半径' + radius +
-  'm。リアルタイム空車データは未接続です。';
-
-}
-
-map.on(‘click’, function(e){
-updatePoint(e.latlng, ‘地図で指定した地点’);
-});
-
-marker.on(‘dragend’, function(){
-updatePoint(marker.getLatLng(), ‘地図で指定した地点’);
-});
-
-document.getElementById(‘taxiRadius’).addEventListener(‘change’, function(){
-updatePoint(marker.getLatLng());
-});
-
-document.querySelectorAll(’[data-taxi-place]’).forEach(function(button){
-button.addEventListener(‘click’, function(){
-const point = L.latLng(
-Number(button.dataset.lat),
-Number(button.dataset.lon)
-);
-map.setView(point, 15);
-updatePoint(point, button.dataset.taxiPlace);
-});
-});
-
-async function searchPlace(){
-const input = document.getElementById(‘taxiPlaceSearch’);
-const query = input.value.trim();
-
-if (!query) {
-  status.textContent = '駅名や住所を入力してください。';
-  return;
-}
-status.textContent = '場所を検索しています…';
-try {
-  const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=jp&q=' +
-    encodeURIComponent(query);
-  const response = await fetch(url);
-  if (!response.ok) throw new Error('検索失敗');
-  const results = await response.json();
-  if (!results.length) {
-    status.textContent = '場所が見つかりませんでした。';
+  if (!window.L) {
+    if (status) {
+      status.textContent = '地図を読み込めませんでした。通信環境を確認してください。';
+    }
     return;
   }
-  const result = results[0];
-  const point = L.latLng(Number(result.lat), Number(result.lon));
-  map.setView(point, 15);
-  updatePoint(point, result.display_name.split(',')[0] || query);
-} catch (error) {
-  status.textContent = '検索できませんでした。地図をタップするか主要地点ボタンを使ってください。';
-}
 
-}
+  const defaultCenter = [35.6812, 139.7690];
 
-document.getElementById(‘taxiPlaceSearchBtn’).addEventListener(‘click’, searchPlace);
+  const map = L.map('taxiMap').setView(defaultCenter, 13);
 
-document.getElementById(‘taxiPlaceSearch’).addEventListener(‘keydown’, function(e){
-if (e.key === ‘Enter’) searchPlace();
-});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
 
-updatePoint(L.latLng(defaultCenter[0], defaultCenter[1]), ‘東京駅’);
-status.textContent = ‘地図の準備ができました。地点を選択してください。’;
+  let selectedLabel = '東京駅';
 
-setTimeout(function(){
-map.invalidateSize();
-}, 250);
+  const marker = L.marker(defaultCenter, {
+    draggable: true
+  }).addTo(map);
+
+  const circle = L.circle(defaultCenter, {
+    radius: 500
+  }).addTo(map);
+
+  function updatePoint(latlng, label) {
+    marker.setLatLng(latlng);
+    circle.setLatLng(latlng);
+
+    const radius = Number(document.getElementById('taxiRadius').value);
+    circle.setRadius(radius);
+
+    if (label) selectedLabel = label;
+
+    document.getElementById('taxiSelectedPlace').textContent = selectedLabel;
+
+    document.getElementById('taxiSelectedCoords').textContent =
+      latlng.lat.toFixed(5) + ', ' + latlng.lng.toFixed(5);
+
+    status.textContent = '調査範囲：半径' + radius +
+      'm。リアルタイム空車データは未接続です。';
+  }
+
+  map.on('click', function(e) {
+    updatePoint(e.latlng, '地図で指定した地点');
+  });
+
+  marker.on('dragend', function() {
+    updatePoint(marker.getLatLng(), '地図で指定した地点');
+  });
+
+  document.getElementById('taxiRadius').addEventListener('change', function() {
+    updatePoint(marker.getLatLng());
+  });
+
+  document.querySelectorAll('[data-taxi-place]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      const point = L.latLng(
+        Number(button.dataset.lat),
+        Number(button.dataset.lon)
+      );
+
+      map.setView(point, 15);
+      updatePoint(point, button.dataset.taxiPlace);
+    });
+  });
+
+  async function searchPlace() {
+    const input = document.getElementById('taxiPlaceSearch');
+    const query = input.value.trim();
+
+    if (!query) {
+      status.textContent = '駅名や住所を入力してください。';
+      return;
+    }
+
+    status.textContent = '場所を検索しています…';
+
+    try {
+      const url =
+        'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=jp&q=' +
+        encodeURIComponent(query);
+
+      const response = await fetch(url);
+
+      if (!response.ok) throw new Error('検索失敗');
+
+      const results = await response.json();
+
+      if (!results.length) {
+        status.textContent = '場所が見つかりませんでした。';
+        return;
+      }
+
+      const result = results[0];
+
+      const point = L.latLng(
+        Number(result.lat),
+        Number(result.lon)
+      );
+
+      map.setView(point, 15);
+
+      updatePoint(
+        point,
+        result.display_name.split(',')[0] || query
+      );
+    } catch (error) {
+      status.textContent =
+        '検索できませんでした。地図をタップするか主要地点ボタンを使ってください。';
+    }
+  }
+
+  document.getElementById('taxiPlaceSearchBtn')
+    .addEventListener('click', searchPlace);
+
+  document.getElementById('taxiPlaceSearch')
+    .addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') searchPlace();
+    });
+
+  updatePoint(
+    L.latLng(defaultCenter[0], defaultCenter[1]),
+    '東京駅'
+  );
+
+  status.textContent = '地図の準備ができました。地点を選択してください。';
+
+  setTimeout(function() {
+    map.invalidateSize();
+  }, 250);
 })();
 </script></body></html>
