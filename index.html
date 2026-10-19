@@ -77,6 +77,63 @@ section{margin:0 0 28px}.section-title{font-size:22px;margin:0 0 5px}.section-su
 <p class="fare-note">※ 東京無線協同組合の公式掲載内容をもとにした早見表です。定額運賃の設定がない区市は掲載していません。<br>※ 深夜早朝割増は、運送の開始から終了までが22:00〜翌5:00の時間帯にすべて含まれる場合に適用されます。高速・有料道路料金、駐車料金などは別途です。<br>※ 運賃改定時にはこの表も更新が必要です。利用前に必ず<a style="padding:0;background:none;color:#65d7b0;text-decoration:underline" target="_blank" rel="noopener noreferrer" href="https://www.tokyomusen.or.jp/flat/haneda">東京無線の公式運賃表</a>をご確認ください。</p>
 </div></section>
 
+<section id="taxi-explorer">
+<h2 class="section-title">🗺️ 空車タクシー探索マップ</h2>
+<p class="section-sub">地図で調査地点を指定できます。空車台数のリアルタイムデータは未接続です。</p>
+
+<div class="taxi-map-panel">
+  <div class="taxi-map-layout">
+    <div>
+      <div id="taxiMap" aria-label="空車タクシー探索用地図"></div>
+      <p class="taxi-map-status">地図をタップすると調査地点を指定できます。</p>
+    </div>
+
+    <div class="taxi-map-side">
+      <label>場所を検索
+        <div style="display:flex;gap:7px">
+          <input id="taxiPlaceSearch" type="search" placeholder="例：新宿駅東口" style="flex:1">
+          <button id="taxiPlaceSearchBtn" type="button">検索</button>
+        </div>
+      </label>
+
+      <div class="taxi-map-buttons">
+        <button type="button" data-taxi-place="新宿駅東口" data-lat="35.6938" data-lon="139.7034">新宿</button>
+        <button type="button" data-taxi-place="渋谷駅" data-lat="35.6580" data-lon="139.7016">渋谷</button>
+        <button type="button" data-taxi-place="東京駅八重洲口" data-lat="35.6812" data-lon="139.7690">東京駅</button>
+        <button type="button" data-taxi-place="品川駅" data-lat="35.6284" data-lon="139.7387">品川</button>
+        <button type="button" data-taxi-place="銀座駅" data-lat="35.6717" data-lon="139.7650">銀座</button>
+      </div>
+
+      <label>調査半径
+        <select id="taxiRadius">
+          <option value="300">半径300m</option>
+          <option value="500" selected>半径500m</option>
+          <option value="1000">半径1km</option>
+          <option value="3000">半径3km</option>
+        </select>
+      </label>
+
+      <div class="taxi-map-stat">
+        <span>選択地点</span>
+        <strong id="taxiSelectedPlace" style="font-size:16px">東京駅</strong>
+        <span id="taxiSelectedCoords">35.68120, 139.76900</span>
+      </div>
+
+      <div class="taxi-map-stat">
+        <span>周辺の空車タクシー</span>
+        <strong>データ未接続</strong>
+        <span>空車データを取得できるようになるまでは、台数を表示しません。</span>
+      </div>
+
+      <div class="taxi-map-warning">
+        ⚠️ 現在は地点指定と調査範囲の確認用です。リアルタイムの空車台数・車両位置は未取得です。
+      </div>
+
+      <p class="taxi-map-status" id="taxiMapStatus">地図を準備しています…</p>
+    </div>
+  </div>
+</div>
+</section>
 <section id="events">
 <h2 class="section-title">🎪 東京23区 イベント情報</h2>
 <p class="section-sub">今日・明日・週末の催しを確認。タクシー需要や混雑の目安探しに。</p>
@@ -257,5 +314,113 @@ async function loadAutoEvents() {
   }
 }
 loadAutoEvents();
+/* 空車探索マップ：地点指定のみ。リアルタイム空車データは未接続。 */
+(function initTaxiExplorer(){
+const mapElement = document.getElementById(‘taxiMap’);
+const status = document.getElementById(‘taxiMapStatus’);
+if (!mapElement) return;
+if (!window.L) {
+if (status) status.textContent = ‘地図を読み込めませんでした。通信環境を確認してください。’;
+return;
+}
 
+const defaultCenter = [35.6812, 139.7690];
+const map = L.map(‘taxiMap’).setView(defaultCenter, 13);
+
+L.tileLayer(‘https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png’, {
+maxZoom: 19,
+attribution: ‘© OpenStreetMap contributors’
+}).addTo(map);
+
+const marker = L.marker(defaultCenter, {draggable:true}).addTo(map);
+const circle = L.circle(defaultCenter, {
+radius: 500,
+color:’#65d7b0’,
+weight:2,
+fillColor:’#65d7b0’,
+fillOpacity:0.12
+}).addTo(map);
+
+let selectedLabel = ‘東京駅’;
+
+function updatePoint(latlng, label){
+marker.setLatLng(latlng);
+circle.setLatLng(latlng);
+
+const radius = Number(document.getElementById('taxiRadius').value);
+circle.setRadius(radius);
+if (label) selectedLabel = label;
+document.getElementById('taxiSelectedPlace').textContent = selectedLabel;
+document.getElementById('taxiSelectedCoords').textContent =
+  latlng.lat.toFixed(5) + ', ' + latlng.lng.toFixed(5);
+status.textContent = '調査範囲：半径' + radius +
+  'm。リアルタイム空車データは未接続です。';
+
+}
+
+map.on(‘click’, function(e){
+updatePoint(e.latlng, ‘地図で指定した地点’);
+});
+
+marker.on(‘dragend’, function(){
+updatePoint(marker.getLatLng(), ‘地図で指定した地点’);
+});
+
+document.getElementById(‘taxiRadius’).addEventListener(‘change’, function(){
+updatePoint(marker.getLatLng());
+});
+
+document.querySelectorAll(’[data-taxi-place]’).forEach(function(button){
+button.addEventListener(‘click’, function(){
+const point = L.latLng(
+Number(button.dataset.lat),
+Number(button.dataset.lon)
+);
+map.setView(point, 15);
+updatePoint(point, button.dataset.taxiPlace);
+});
+});
+
+async function searchPlace(){
+const input = document.getElementById(‘taxiPlaceSearch’);
+const query = input.value.trim();
+
+if (!query) {
+  status.textContent = '駅名や住所を入力してください。';
+  return;
+}
+status.textContent = '場所を検索しています…';
+try {
+  const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=jp&q=' +
+    encodeURIComponent(query);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('検索失敗');
+  const results = await response.json();
+  if (!results.length) {
+    status.textContent = '場所が見つかりませんでした。';
+    return;
+  }
+  const result = results[0];
+  const point = L.latLng(Number(result.lat), Number(result.lon));
+  map.setView(point, 15);
+  updatePoint(point, result.display_name.split(',')[0] || query);
+} catch (error) {
+  status.textContent = '検索できませんでした。地図をタップするか主要地点ボタンを使ってください。';
+}
+
+}
+
+document.getElementById(‘taxiPlaceSearchBtn’).addEventListener(‘click’, searchPlace);
+
+document.getElementById(‘taxiPlaceSearch’).addEventListener(‘keydown’, function(e){
+if (e.key === ‘Enter’) searchPlace();
+});
+
+updatePoint(L.latLng(defaultCenter[0], defaultCenter[1]), ‘東京駅’);
+status.textContent = ‘地図の準備ができました。地点を選択してください。’;
+
+setTimeout(function(){
+map.invalidateSize();
+}, 250);
+})();
 </script></body></html>
