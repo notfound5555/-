@@ -23,7 +23,23 @@ section{margin:0 0 28px}.section-title{font-size:22px;margin:0 0 5px}.section-su
 .event-tools select{width:100%;min-width:0}
 .event-status{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
 @media(max-width:560px){.event-tools{grid-template-columns:1fr}}
-</style></head><body>
+/* 空車探索マップ */
+.taxi-map-panel{background:var(–panel);border:1px solid var(–line);border-radius:15px;padding:14px}
+.taxi-map-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:14px}
+#taxiMap{height:460px;min-height:320px;border-radius:12px;overflow:hidden;background:#101827;border:1px solid var(–line)}
+.taxi-map-side{display:flex;flex-direction:column;gap:10px}
+.taxi-map-side label{display:flex;flex-direction:column;gap:6px;color:var(–muted);font-size:12px}
+.taxi-map-side input,.taxi-map-side select{width:100%;min-width:0}
+.taxi-map-buttons{display:flex;flex-wrap:wrap;gap:7px}
+.taxi-map-buttons button{font-size:12px;padding:8px 10px}
+.taxi-map-stat{border:1px solid var(–line);border-radius:11px;padding:12px;background:#101b2b}
+.taxi-map-stat strong{display:block;font-size:20px;margin-bottom:4px}
+.taxi-map-stat span{font-size:12px;color:var(–muted);line-height:1.6}
+.taxi-map-warning{padding:12px;border:1px solid #6b5b2c;background:#2a2518;color:#f4df9b;border-radius:10px;font-size:12px;line-height:1.7}
+.taxi-map-status{font-size:12px;color:var(–muted);line-height:1.7;margin:0}
+@media(max-width:720px){.taxi-map-layout{grid-template-columns:1fr}#taxiMap{height:360px}}
+@media(max-width:560px){#taxiMap{height:320px}.taxi-map-panel{padding:10px}}</style><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script></head><body>
 <header><h1>果報は寝て待て会場 ポータル by 田🚕</h1><p class="sub">羽田空港 タクシー乗り場・待機所カメラ ＋ 定額運賃早見表</p></header>
 <main>
 <section id="cameras"><h2 class="section-title">📹 ライブカメラ</h2><p class="section-sub">見たい種類のカメラに絞り込めます。</p>
