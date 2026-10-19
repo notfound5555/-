@@ -327,9 +327,9 @@ return;
 const defaultCenter = [35.6812, 139.7690];
 const map = L.map(‘taxiMap’).setView(defaultCenter, 13);
 
-L.tileLayer(‘https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png’, {
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 maxZoom: 19,
-attribution: ‘© OpenStreetMap contributors’
+attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
 const marker = L.marker(defaultCenter, {draggable:true}).addTo(map);
