@@ -336,7 +336,43 @@ loadAutoEvents();
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
+  // イベント会場マーカー
+  const eventVenues = [
+    {
+      name: '東京ドーム',
+      lat: 35.7056,
+      lng: 139.7519
+    },
+    {
+      name: '日本武道館',
+      lat: 35.6933,
+      lng: 139.7499
+    },
+    {
+      name: '東京ビッグサイト',
+      lat: 35.6298,
+      lng: 139.7944
+    },
+    {
+      name: '有明アリーナ',
+      lat: 35.6426,
+      lng: 139.7890
+    },
+    {
+      name: 'TOYOTA ARENA TOKYO',
+      lat: 35.6278,
+      lng: 139.7835
+    }
+  ];
 
+  eventVenues.forEach(function(venue) {
+    L.marker([venue.lat, venue.lng])
+      .addTo(map)
+      .bindPopup(
+        '<strong>' + venue.name + '</strong><br>' +
+        'イベント開催状況・タクシー需要を確認する会場'
+      );
+  });
   let selectedLabel = '東京駅';
 
   const marker = L.marker(defaultCenter, {
