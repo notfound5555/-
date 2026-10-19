@@ -177,84 +177,175 @@ def main():
     today = datetime.now(JST).date()
     events = []
     sources = []
-    dome_source = next(s for s in SOURCES if s["venue"] == "東京ドーム")
-    try:
-        html = fetch_page(dome_source["url"])
-        text_sample = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.I | re.S)
-        text_sample = re.sub(r"<style\b[^>]*>.*?</style>", " ", text_sample, flags=re.I | re.S)
-        text_sample = re.sub(r"<[^>]+>", " ", text_sample)
-        text_sample = re.sub(r"\s+", " ", text_sample)
 
-        month_label = f"{today.year}年{today.month}月"
-        month_pos = text_sample.find(month_label)
-
-        if month_pos >= 0:
-            month_text = text_sample[month_pos:]
-            month_text = month_text[:12000]
-            print(f"東京ドーム: 今日の月の情報を確認中 ({month_label})")
-            print(month_text[:1500])
-        else:
-            print(f"東京ドーム: {month_label} が見つかりません")
-    except Exception as exc:
-        print(f"東京ドーム追加確認エラー: {exc}")
     for original in SOURCES:
         source = dict(original)
+
         try:
             html = fetch_page(source["url"])
+
             parser = JsonLdParser()
             parser.feed(html)
 
-            print(f'{source["venue"]}: HTML length = {len(html)}')
-            print(f'{source["venue"]}: JSON-LD documents = {len(parser.documents)}')
-            if source["venue"] == "東京ドーム":
-                for keyword in ["2026", "10月", "イベント", "公演", "schedule"]:
-                    print(
-                        f'東京ドーム: "{keyword}" '
-                        f'count = {html.lower().count(keyword.lower())}'
-                    )
-                    if source["venue"] == "東京ドーム":
-                         text_sample = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.I | re.S)
-                         text_sample = re.sub(r"<style\b[^>]*>.*?</style>", " ", text_sample, flags=re.I | re.S)
-                         text_sample = re.sub(r"<[^>]+>", " ", text_sample)
-                         text_sample = re.sub(r"\s+", " ", text_sample)
+            venue_events = []
 
-                         for keyword in ["2026年10月", "10月18日", "10/18", "開催日"]:
-                             pos = text_sample.find(keyword)
-                             if pos >= 0:
-                                print(f"東京ドーム text around {keyword}: {text_sample[max(0, pos-100):pos+250]}")
-            source["available_at_last_check"] = True
-            source["events_found_today"] = 0
-
+            # まずは従来どおりJSON-LDから取得
             for document in parser.documents:
-                events.extend(extract_events(document, source, today))
+                venue_events.extend(
+                    extract_events(document, source, today)
+                )
 
+            # 東京ドームは通常のHTMLからも取得する
+            if source["venue"] == "東京ドーム":
+                text_sample = re.sub(
+                    r"<script\b[^>]*>.*?</script>",
+                    " ",
+                    html,
+                    flags=re.I | re.S,
+                )
+                text_sample = re.sub(
+                    r"<style\b[^>]*>.*?</style>",
+                    " ",
+                    text_sample,
+                    flags=re.I | re.S,
+                )
+                text_sample = re.sub(
+                    r"<[^>]+>",
+                    " ",
+                    text_sample,
+                )
+                text_sample = re.sub(
+                    r"\s+",
+                    " ",
+                    text_sample,
+                )
+
+                month_label = f"{today.year}年{today.month}月"
+
+                month_match = re.search(
+                    re.escape(month_label)
+                    + r"(.*?)(?=\d{4}年\d{1,2}月|$)",
+                    text_sample,
+                )
+
+                if month_match:
+                    month_text = month_match.group(1)
+
+                    day_pattern = (
+                        r"(\d{1,2})\s*\([^)]*\)\s*\|\s*"
+                        r"(.*?)(?=\s+\d{1,2}\s*"
+                        r"\([^)]*\)\s*\||$)"
+                    )
+
+                    for match in re.finditer(
+                        day_pattern,
+                        month_text,
+                    ):
+                        day = int(match.group(1))
+                        description = match.group(2).strip()
+
+                        if not description:
+                            continue
+
+                        try:
+                            event_date = datetime(
+                                today.year,
+                                today.month,
+                                day,
+                            ).date()
+                        except ValueError:
+                            continue
+
+                        # 問い合わせ先などだけの行は除外
+                        if description.startswith("TEL"):
+                            continue
+
+                        start_match = re.search(
+                            r"(?:開始|開演)\s*"
+                            r"([0-2]?\d:\d{2})",
+                            description,
+                        )
+
+                        end_match = re.search(
+                            r"終了\s*([0-2]?\d:\d{2})",
+                            description,
+                        )
+
+                        venue_event = {
+                            "date": event_date.isoformat(),
+                            "venue": source["venue"],
+                            "title": description,
+                            "start_time": (
+                                start_match.group(1)
+                                if start_match else None
+                            ),
+                            "end_time": (
+                                end_match.group(1)
+                                if end_match else None
+                            ),
+                            "source_url": source["url"],
+                        }
+
+                        venue_events.append(venue_event)
+
+            # 同じ会場・日付・イベント名の重複を除外
+            unique_events = []
+            seen = set()
+
+            for event in venue_events:
+                key = (
+                    event["venue"],
+                    event["date"],
+                    event["title"],
+                )
+
+                if key in seen:
+                    continue
+
+                seen.add(key)
+                unique_events.append(event)
+
+            events.extend(unique_events)
+
+            source["available_at_last_check"] = True
             source["events_found_today"] = sum(
-                1 for event in events if event["venue"] == source["venue"]
+                1
+                for event in unique_events
+                if event["date"] == today.isoformat()
             )
+
             print(
                 f'{source["venue"]}: '
-                f'{source["events_found_today"]} event(s) found'
+                f'{len(unique_events)} event(s) found'
             )
 
         except Exception as exc:
             source["available_at_last_check"] = False
             source["error"] = str(exc)
-            print(f'Warning: {source["venue"]}: {exc}')
+
+            print(
+                f'Warning: {source["venue"]}: {exc}'
+            )
 
         sources.append(source)
 
-    events.sort(key=lambda event: (
-        event.get("start_time") or "99:99",
-        event["venue"],
-        event["title"],
-    ))
+    events.sort(
+        key=lambda event: (
+            event.get("date") or "9999-99-99",
+            event.get("start_time") or "99:99",
+            event["venue"],
+        )
+    )
 
     data = {
-        "updated_at_jst": datetime.now(JST).strftime("%Y-%m-%d %H:%M"),
+        "updated_at_jst": datetime.now(JST).strftime(
+            "%Y-%m-%d %H:%M"
+        ),
         "date": today.isoformat(),
         "note": (
-            "公式ページから取得できた構造化イベント情報です。"
-            "掲載形式によってはイベントが抽出されない場合があります。"
+            "公式ページから取得したイベント情報です。"
+            "会場や掲載形式によっては、"
+            "イベントが抽出されない場合があります。"
         ),
         "events": events,
         "sources": sources,
@@ -264,7 +355,11 @@ def main():
         json.dumps(data, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    print(f"Updated {DATA_FILE} at {data['updated_at_jst']} JST")
+
+    print(
+        f'Updated {DATA_FILE} at '
+        f'{data["updated_at_jst"]} JST'
+    )
     print(f"Today's events: {len(events)}")
 
 
