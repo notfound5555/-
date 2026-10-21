@@ -1,6 +1,6 @@
 {
-  "updated_at_jst": "2026-10-21 00:38",
-  "date": "2026-10-21",
+  "updated_at_jst": "2026-10-22 00:36",
+  "date": "2026-10-22",
   "note": "公式ページから取得したイベント情報です。会場や掲載形式によっては、イベントが抽出されない場合があります。",
   "events": [],
   "sources": [
@@ -9,8 +9,8 @@
       "title": "東京ドーム｜イベントスケジュール",
       "url": "https://www.tokyo-dome.co.jp/dome/event/schedule.html",
       "description": "東京ドームの公式イベント情報",
-      "available_at_last_check": true,
-      "events_found_today": 0
+      "available_at_last_check": false,
+      "error": "HTTP Error 503: Service Unavailable"
     },
     {
       "venue": "東京ビッグサイト",
@@ -25,8 +25,8 @@
       "title": "日本武道館｜公式サイト",
       "url": "https://www.nipponbudokan.or.jp/",
       "description": "日本武道館の公式情報",
-      "available_at_last_check": true,
-      "events_found_today": 0
+      "available_at_last_check": false,
+      "error": "<urlopen error [Errno 111] Connection refused>"
     },
     {
       "venue": "有明アリーナ",
