@@ -1,6 +1,6 @@
 {
-  "updated_at_jst": "2026-10-28 00:49",
-  "date": "2026-10-28",
+  "updated_at_jst": "2026-10-29 00:52",
+  "date": "2026-10-29",
   "note": "公式ページから取得したイベント情報です。会場や掲載形式によっては、イベントが抽出されない場合があります。",
   "events": [],
   "sources": [
@@ -17,8 +17,8 @@
       "title": "東京ビッグサイト｜イベント情報",
       "url": "https://www.bigsight.jp/visitor/event/",
       "description": "展示会・イベントの公式開催情報",
-      "available_at_last_check": false,
-      "error": "HTTP Error 503: Service Unavailable"
+      "available_at_last_check": true,
+      "events_found_today": 0
     },
     {
       "venue": "日本武道館",
